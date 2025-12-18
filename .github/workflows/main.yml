@@ -1,0 +1,55 @@
+name: Spring boot docker image CI/CD
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    #소스복사
+    #- name: 소스복사
+    # run: git clone https://github.com/yoooooungwoon/kosa-devops-step2.git
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: gradlew 파일 실행 권한 설정
+        run: chmod +x gradlew
+
+      - name: Test with gradlew
+        run: ./gradlew --info test
+
+      - name: spring boot 실행파일 생성
+        run: ./gradlew bootJar
+
+      - name: docker image 생성
+        run: docker build -t yong/devops_step2:v0.1
+
+      - name: Docker Login
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+            -u ${{ secrets.DOCKER_USERNAME }} \
+            --password-stdin
+            
+      - name: docker image 허브에 저장 
+        run: docker push yong/devops_step2:v0.1
+        
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: self-hosted
+    steps:
+    - name: docker login
+      uses: docker/login-action@v1
+      with:
+        username: yong1624
+        password: ${{  secrets.DOCKER_PASSWORD  }}
+
+    - name: docker image pull
+      run: docker pull masungil/devops_step2:v1.0
