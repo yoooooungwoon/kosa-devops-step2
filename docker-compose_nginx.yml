@@ -1,0 +1,29 @@
+#version: '3.1'
+#네트웍 브릿지 추가 함
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app1
+      - app2
+    networks:
+      - my_bridge_network
+
+  app1:
+    image: masungil/devops_step2
+    networks:
+      - my_bridge_network
+
+  app2:
+    image: masungil/devops_step2
+    networks:
+      - my_bridge_network
+
+networks:
+  my_bridge_network:
+    driver: bridge
