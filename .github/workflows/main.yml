@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew bootJar
 
       - name: docker image 생성
-        run: docker build -t yong/devops_step2:v0.1
+        run: docker build -t yong/devops_step2:v0.1 .
 
       - name: Docker Login
         run: |
