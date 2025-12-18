@@ -52,4 +52,4 @@ jobs:
         password: ${{  secrets.DOCKER_PASSWORD  }}
 
     - name: docker image pull
-      run: docker pull masungil/devops_step2:v1.0
+      run: docker pull yong/devops_step2:v0.1
