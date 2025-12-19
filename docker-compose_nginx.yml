@@ -15,12 +15,12 @@ services:
       - my_bridge_network
 
   app1:
-    image: masungil/devops_step2
+    image: yong1624/devops_step2:v0.1
     networks:
       - my_bridge_network
 
   app2:
-    image: masungil/devops_step2
+    image: yong1624/devops_step2:v0.1
     networks:
       - my_bridge_network
 
