@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew bootJar
 
       - name: docker image 생성
-        run: docker build -t yong1624/devops_step2:v0.1 .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/devops_step2:v0.1 .
 
       - name: Docker Login
         run: |
@@ -38,18 +38,28 @@ jobs:
             --password-stdin
             
       - name: docker image 허브에 저장 
-        run: docker push yong1624/devops_step2:v0.1
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/devops_step2:v0.1
         
   deploy:
     needs: build
     name: Deploy
     runs-on: self-hosted
     steps:
+    - uses: actions/checkout@v3
+      with:
+        sparse-checkout: |
+          nginx/nginx.conf
+          docker-compose_nginx.yml
+        sparse-checkout-cone-mode: false
+        clean: true
     - name: docker login
       uses: docker/login-action@v1
       with:
-        username: yong1624
+        username: ${{ secrets.DOCKER_USERNAME }} 
         password: ${{  secrets.DOCKER_PASSWORD  }}
 
     - name: docker image pull
-      run: docker pull yong1624/devops_step2:v0.1
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/devops_step2:v0.1
+
+    - name: docker compose 실행
+      run: docker compose -f docker-compose_nginx.yml up -d
